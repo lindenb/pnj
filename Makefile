@@ -6,8 +6,8 @@ JAVAH ?= javah
 CFLAGS=-O3 -Wall  -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 PNJPACKAGE=com.github.lindenb.pnj.jni
 JAVASRCDIR=./src/main/java
-JAVACLASSSRC=./src/main/java/com/github/lindenb/pnj/jni/PngPtr.java
-JAVAQUALNAME=com.github.lindenb.pnj.jni.PngPtr
+JAVACLASSSRC=${JAVASRCDIR}/com/github/lindenb/pnj/jni/PngWriterFactory.java ${JAVASRCDIR}/com/github/lindenb/pnj/jni/PngWriterImpl.java
+JAVAQUALNAME=com.github.lindenb.pnj.jni.PngWriterFactory com.github.lindenb.pnj.jni.PngWriterImpl
 JAR=pnj.jar
 NATIVETARFILE=pnj-native.tar
 TESTDIR=test
@@ -33,7 +33,7 @@ native.dir=src/main/native
 CC?=gcc
 .PHONY:all compile jar  clean
 
-all:  jar 
+all:  ${native.dir}/pnj.o 
 
 
 #compile the JNI bindings
@@ -44,10 +44,12 @@ ${native.dir}/pnj.o: ${native.dir}/pnj.c ${native.dir}/pnj.h
 #create JNI header
 ${native.dir}/pnj.h : compile
 	$(JAVAH) -o $@ -jni -classpath ${JAVASRCDIR} $(JAVAQUALNAME)
-	
+
 #compile java classes
 compile: $(JAVACLASSSRC)
 	$(JAVAC) -sourcepath ${JAVASRCDIR} -d ${JAVASRCDIR} $^
+
+
 
 #create a JAR
 jar: ${JAVASRCDIR}
