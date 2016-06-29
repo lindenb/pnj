@@ -31,12 +31,22 @@ endif
 native.dir=src/main/native
 
 CC?=gcc
-.PHONY:all compile jar  clean
+.PHONY:all compile jar  clean test
 
-all:  ${native.dir}/pnj.o 
+all:  test ${native.dir}/libpnj.so 
+
+
+test: ${native.dir}/libpnj.so
+	$(JAVAC) -sourcepath src/test/java -cp ${JAVASRCDIR} -d ${JAVASRCDIR}  src/test/java/com/github/lindenb/pnj/jni/PngWriterFactoryTest.java
+	$(JAVA) -Djava.library.path=${native.dir} -cp ${JAVASRCDIR} com.github.lindenb.pnj.jni.PngWriterFactoryTest
+
 
 
 #compile the JNI bindings
+${native.dir}/libpnj.so : ${native.dir}/pnj.o
+	$(CC) -dynamiclib -shared -o $@ $<  -L ${native.dir} -lpng
+
+
 ${native.dir}/pnj.o: ${native.dir}/pnj.c ${native.dir}/pnj.h 
 	$(CC) -c $(CFLAGS) -o $@ $(CFLAGS) -fPIC  ${JDK_JNI_INCLUDES} $<
 

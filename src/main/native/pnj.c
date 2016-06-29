@@ -55,6 +55,7 @@ JNIEXPORT jlong JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1
   (JNIEnv* env, jclass c)
   {
   png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  VERIFY_NOT_NULL(png);
   return TO_LONG(png);
   }
  
@@ -62,6 +63,7 @@ JNIEXPORT jlong JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1
   (JNIEnv *env, jclass c, jlong png)
   {
   png_infop info = png_create_info_struct(FROM_LONG(png_structp,png));
+  VERIFY_NOT_NULL(info);
   return TO_LONG(info);
   }
 
@@ -82,7 +84,9 @@ JNIEXPORT jlong JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1fopen
 			}
 		else
 			{
-			stream = TO_LONG(fopen(str,"wb"));
+			FILE* is = fopen(str,"wb");
+			VERIFY_NOT_NULL(is);
+			stream = TO_LONG(is);
 			}
 		(*env)->ReleaseStringUTFChars(env, filename, str);
 		}
@@ -95,6 +99,33 @@ JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1i
    png_init_io(FROM_LONG(png_structp,png), FROM_LONG(FILE*,fp));
   }
 
+
+JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1set_1IHDR
+  (JNIEnv *env, jclass c, jlong png, jlong info, jint width, jint height, jint bitdepth, jint  color_type, jint interlace_type)
+  	{
+  	png_set_IHDR(
+  		FROM_LONG(png_structp,png),
+  		FROM_LONG(png_infop ,info),
+  		(png_uint_32)width,
+  		(png_uint_32)height,
+         bitdepth,
+         color_type,
+         interlace_type,
+         PNG_COMPRESSION_TYPE_BASE,
+         PNG_FILTER_TYPE_BASE
+         );
+  	}
+
+JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1write_1info
+  (JNIEnv *env, jclass c, jlong png, jlong info)
+  {
+  png_write_info(
+  		FROM_LONG(png_structp,png),
+  		FROM_LONG(png_infop ,info)
+  		);
+  }
+
+
 /***************************************************************************************************/
 /***************************************************************************************************/
 /***************************************************************************************************/
@@ -102,12 +133,12 @@ JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1i
 
 JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterImpl__1png_1write_1end
   (JNIEnv* env, jclass c, jlong png) {
-  png_write_end(FROM_LONG(png_structp,png), NULL);
+  if(png!=0L) png_write_end(FROM_LONG(png_structp,png), NULL);
   } 
  
 JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterImpl__1fclose
   (JNIEnv* env, jclass c, jlong fp) {
-  fclose(FROM_LONG(FILE*,fp));
+  if(fp!=0L) fclose(FROM_LONG(FILE*,fp));
   } 
   
 JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterImpl__1png_1write_1row

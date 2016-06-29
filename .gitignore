@@ -17,3 +17,4 @@ jeter*
 .project
 src/main/native/pnj.h
 *.o
+*.so
