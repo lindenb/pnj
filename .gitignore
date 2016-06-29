@@ -16,3 +16,4 @@ jeter*
 .classpath
 .project
 src/main/native/pnj.h
+*.o

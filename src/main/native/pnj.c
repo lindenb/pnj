@@ -5,6 +5,8 @@
 
 #include "pnj.h"
 
+#define TO_LONG(a) ((jlong)(intptr_t)a)
+#define FROM_LONG(t,a) ((t)((intptr_t)a)) 
 
 #define QUALIFIEDMETHOD(fun) Java_com_github_lindenb_pnj_jni_##fun
 #define PACKAGEPATH "com/github/lindenb/pnj/jni/"
@@ -53,14 +55,14 @@ JNIEXPORT jlong JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1
   (JNIEnv* env, jclass c)
   {
   png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-  return (jlong)png;
+  return TO_LONG(png);
   }
  
  JNIEXPORT jlong JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1create_1info_1struct
   (JNIEnv *env, jclass c, jlong png)
   {
-  png_infop info = png_create_info_struct((png_structp)png);
-  return (jlong)info;
+  png_infop info = png_create_info_struct(FROM_LONG(png_structp,png));
+  return TO_LONG(info);
   }
 
 JNIEXPORT jlong JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1fopen
@@ -76,11 +78,11 @@ JNIEXPORT jlong JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1fopen
 			}
 		if(strcmp("-",str)==0)
 			{
-			stream = (long)stdout ;
+			stream = TO_LONG(stdout) ;
 			}
 		else
 			{
-			stream = (long)fopen(str,"wb");
+			stream = TO_LONG(fopen(str,"wb"));
 			}
 		(*env)->ReleaseStringUTFChars(env, filename, str);
 		}
@@ -90,7 +92,7 @@ JNIEXPORT jlong JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1fopen
 
 JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1init_1io
   (JNIEnv *env, jclass c, jlong png, jlong fp) {
-   png_init_io((png_structp)png, (FILE*)fp);
+   png_init_io(FROM_LONG(png_structp,png), FROM_LONG(FILE*,fp));
   }
 
 /***************************************************************************************************/
@@ -100,16 +102,18 @@ JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1i
 
 JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterImpl__1png_1write_1end
   (JNIEnv* env, jclass c, jlong png) {
-  png_write_end((png_structp)png, NULL);
+  png_write_end(FROM_LONG(png_structp,png), NULL);
   } 
  
 JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterImpl__1fclose
   (JNIEnv* env, jclass c, jlong fp) {
-  fclose((FILE*)fp);
+  fclose(FROM_LONG(FILE*,fp));
   } 
   
 JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterImpl__1png_1write_1row
-  (JNIEnv *env, jclass c, jlong png, jbyteArray row)
+  (JNIEnv *env, jclass c, jlong png, jbyteArray array)
   {
-  png_write_row((png_structp)png,row);
+  jbyte* buf =  (*env)->GetByteArrayElements(env, array, 0);
+  png_write_row(FROM_LONG(png_structp,png),(png_bytep)buf);
+  (*env)->ReleaseByteArrayElements(env, array, buf, JNI_COMMIT);
   }
