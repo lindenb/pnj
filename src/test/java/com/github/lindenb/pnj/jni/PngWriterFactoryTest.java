@@ -16,23 +16,23 @@ public class PngWriterFactoryTest {
 public static void main(String[] args) {
 	try {
 		System.loadLibrary("pnj");
-		BufferedImage img= new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+		BufferedImage img= new BufferedImage(100, 200, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g=img.createGraphics();
 		g.setColor(Color.BLUE);
-		g.fillRect(0, 0, 100, 100);
+		g.fillRect(0, 0, 100, 200);
 		g.setColor(Color.BLACK);
-		g.drawLine(0, 0, 50, 50);
+		g.fillRect(10, 10, 80, 180);
 		g.dispose();
 		
-		
+		 //javax.imageio.ImageIO.write(img, "png", new java.io.File("jeter0.png"));
 		final PngWriter w = PngWriterFactory.newInstance().
 				width(img.getWidth()).
-				height(img.getHeight()).
+				height(img.getHeight()*10).
 				bitDepth(8).
 				colorType(PngWriterFactory.ColorType.RGB).
 				openPngWriter("jeter2.png");
-		
-		w.writeImageTile(img);
+		for(int x=0;x<10;++x)
+		   w.writeImageTile(img);
 		w.close();
 		
 	} catch (Exception e) {

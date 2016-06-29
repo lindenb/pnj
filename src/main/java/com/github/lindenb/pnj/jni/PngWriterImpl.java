@@ -43,10 +43,13 @@ public void writeImageTile(final BufferedImage img)  throws java.io.IOException
 				{
 				for(int x=0;x<img.getWidth();++x)
 					{
+					int shift=0;
 					int c = bufint.getElem(y*img.getWidth()+x);
-					row[x*sample_per_pixel+0] =  (byte) (c >> 24);
-					row[x*sample_per_pixel+1] =  (byte) (c >> 16);
-					row[x*sample_per_pixel+2] =  (byte) (c >> 8);
+					for(int z=sample_per_pixel-1;z>=0;--z)
+						{
+						row[x*sample_per_pixel+z] =  (byte) (c >> shift);
+						shift+=8;
+						}
 					//row[x*4+3] =  (byte) (c );
 					}
 				this.writeRow(row);

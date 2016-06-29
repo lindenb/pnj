@@ -103,7 +103,6 @@ JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1i
 JNIEXPORT void JNICALL Java_com_github_lindenb_pnj_jni_PngWriterFactory__1png_1set_1IHDR
   (JNIEnv *env, jclass c, jlong png, jlong info, jint width, jint height, jint bitdepth, jint  color_type, jint interlace_type)
   	{
-  	fprintf(stderr,"bd = %d type =%d\n",bitdepth,color_type);
   	png_set_IHDR(
   		FROM_LONG(png_structp,png),
   		FROM_LONG(png_infop ,info),
